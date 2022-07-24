@@ -4,9 +4,9 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "MakerboxLao5G";
-const char* password = "asdasdasd";
-const char* mqtt_server = "broker.hivemq.com";
+const char* ssid = "******";
+const char* password = "*******";
+const char* mqtt_server = "*****";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
