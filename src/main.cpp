@@ -18,8 +18,7 @@ DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 void setup()
 {
    Serial.begin(115200);
-   Serial.println("Relay Test");
-
+   Serial.println("Mushroom");
    pinMode(RelayFan, OUTPUT);
    pinMode(RelayPum, OUTPUT);
    for (auto &sensor : dht)
@@ -27,17 +26,16 @@ void setup()
     sensor.begin();
   }
 }
-
    void loop()
    {
-      digitalWrite(RelayFan, HIGH);
-      digitalWrite(RelayPum, HIGH);
-      Serial.println("on");
-      delay(5000);
-      digitalWrite(RelayFan, LOW);
-      digitalWrite(RelayPum, LOW);
-      Serial.println("off");
-      delay(5000);
+      // digitalWrite(RelayFan, 1);
+      // digitalWrite(RelayPum, 1); 
+      // Serial.println("onFAN");
+      // delay(50000);
+      // digitalWrite(RelayFan, LOW);
+      // digitalWrite(RelayPum, LOW);
+      // Serial.println("off");
+      // delay(5000);
       for (int index = 0; index < 2; index++)
   {
     humids[index] = dht[index].readHumidity();
@@ -56,6 +54,5 @@ void setup()
     Serial.printf("humid 2: %f", humids[1]);
     Serial.printf("\t\ntemp 2: %f", temps[1]);
   }
-  
-  delay(2000);
+  delay(5000);
    }
