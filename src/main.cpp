@@ -2,16 +2,8 @@
 #include "DHT.h"
 #include <Adafruit_Sensor.h>
 
-
 #define DHTTYPE DHT22
-<<<<<<< HEAD
-int RelayFan = 4; // D2
-int RelayPum = 0; // D3
-// const int Relay2 = D7;
-=======
 
-#define DHTTYPE DHT22
->>>>>>> dht
 int RelayFan = 4; // D2
 int RelayPum = 0; // D3
 
