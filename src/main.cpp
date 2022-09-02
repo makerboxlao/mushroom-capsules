@@ -10,6 +10,7 @@ void setup() {
  Serial.println("Relay Test");
 
  pinMode(RelayFan,OUTPUT);
+ pinMode(RelayPum,OUTPUT);
 //  pinMode(Relay2,OUTPUT);
 
 }
@@ -17,9 +18,9 @@ void loop() {
    digitalWrite(RelayFan,HIGH);
    digitalWrite(RelayPum,HIGH);
    Serial.println("on");
-   delay(20000);
+   delay(5000);
 digitalWrite(RelayFan,LOW);
 digitalWrite(RelayPum,LOW);
 Serial.println("off");
-delay(20000);
+delay(5000);
 }
