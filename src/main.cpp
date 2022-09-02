@@ -2,6 +2,7 @@
 #include "DHT.h"
 #include <Adafruit_Sensor.h>
 
+
 #define DHTTYPE DHT22
 
 
