@@ -8,7 +8,6 @@
 
 #define Topic_in "in/dht/mushroom"
 #define Topic_out "out/dht/mushroom"
-// String data = "{\"pH\":,\"DO\":Math.round(Math.random()*100),\"EC\":Math.round(Math.random()*4000),\"timestamp\":msg.payload,\"latitude\":7.956352,\"longitude\":102.603704, \"wifi\":\""+ WiFi.SSID() +"\"}";
 
 int RelayFan = 4; // D20
 int RelayPum = 0; // D3
