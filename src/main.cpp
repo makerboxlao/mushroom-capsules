@@ -1,4 +1,5 @@
-#include <ESP8266WiFi.h>
+// #include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
 #include "DHT.h"
@@ -24,12 +25,12 @@ float temps[2];
 // as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // Replace the next variables with your SSID/Password combination
-const char *ssid = "MakerboxLao";
-const char *password = "asdasdasd";
+// const char *ssid = "MakerboxLao";
+// const char *password = "asdasdasd";
 
 // Add your MQTT Broker IP address, example:
-// const char* mqtt_server = "192.168.43.130";
-const char *mqtt_server = "broker.hivemq.com";
+const char *mqtt_server = "192.168.43.146";
+// const char *mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -46,7 +47,7 @@ void setup()
 {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 1884);
   client.setCallback(callback);
   pinMode(RelayFan, OUTPUT);
   pinMode(RelayPum, OUTPUT);
@@ -57,22 +58,23 @@ void setup()
   {
     sensor.begin();
   }
-    
 }
-void setup_wifi(){
-  res = wm.autoConnect("ESP32_MLB","asdasdasd"); 
-  if(!res) {
-        Serial.println("Failed to connect");
-        // ESP.restart();
-    } 
-    else {
- 
-        Serial.println("connected");
-        Serial.println(WiFi.SSID());
-        digitalWrite(LEDwifi, HIGH);
-    }
-    // res = wm.autoConnect(); // auto generated AP name from chipid
-    // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
+void setup_wifi()
+{
+  res = wm.autoConnect("ESP32_MLB", "asdasdasd");
+  if (!res)
+  {
+    Serial.println("Failed to connect");
+  }
+  else
+  {
+
+    Serial.println("connected");
+    Serial.println(WiFi.SSID());
+    digitalWrite(LEDwifi, HIGH);
+  }
+  // res = wm.autoConnect(); // auto generated AP name from chipid
+  // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
 }
 // void setup_wifi()
 // {
@@ -111,7 +113,6 @@ void callback(char *topic, byte *message, unsigned int length)
     messageTemp += (char)message[i];
   }
   Serial.println();
-
   // Feel free to add more if statements to control more GPIOs with MQTT
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
   // Changes the output state according to the message
@@ -144,7 +145,16 @@ void callback(char *topic, byte *message, unsigned int length)
     }
   }
 }
-
+void resetwifi()
+{
+  if (digitalRead(Reset) == HIGH)
+  {
+    Serial.println("reset wifi and restart...!");
+    wm.resetSettings();
+    ESP.restart();
+    digitalWrite(LEDwifi, LOW);
+  }
+}
 String macToStr(const uint8_t *mac)
 {
   String result;
@@ -163,8 +173,6 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Attempting MQTT connection...");
-
-    // Generate client name based on MAC address and last 8 bits of microsecond counter
     String clientName;
     clientName += "esp8266-";
     uint8_t mac[6];
@@ -188,6 +196,7 @@ void reconnect()
     }
     else
     {
+      resetwifi();
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
@@ -205,16 +214,9 @@ void loop()
     reconnect();
   }
   client.loop();
-   if (digitalRead(Reset) == HIGH) 
-  {
-    Serial.println("reset wifi and restart...!");
-    wm.resetSettings();
-    ESP.restart();
-    digitalWrite(LEDwifi, HIGH);
-  }
   long now = millis();
   if (now - lastMsg > 60000)
-  { 
+  {
     lastMsg = now;
     for (int index = 0; index < 2; index++)
     {
@@ -225,7 +227,7 @@ void loop()
     String Temin = String(temps[0]).c_str();
     String Humout = String(humids[1]).c_str();
     String Temout = String(temps[1]).c_str();
-
+    resetwifi();
     if (isnan(humids[0]))
     {
       Serial.println("\nHumindity 1 is not detected");
