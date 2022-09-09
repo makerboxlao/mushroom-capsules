@@ -1,8 +1,9 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
 #include "DHT.h"
 #include <Adafruit_Sensor.h>
+#include <WiFiManager.h>
 
 #define DHTTYPE DHT22
 
@@ -13,7 +14,7 @@ int RelayFan = 4; // D20
 int RelayPum = 0; // D3
 int LEDwifi = 2;
 int LEDmqtt = 19;
-int Reset = 14;
+int Reset = 16;
 
 float humids[2];
 float temps[2];
@@ -39,10 +40,11 @@ void callback(char *topic, byte *message, unsigned int length);
 void setup_wifi();
 String data_in;
 String data_out;
+WiFiManager wm;
+bool res;
 void setup()
 {
   Serial.begin(115200);
-
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -50,35 +52,51 @@ void setup()
   pinMode(RelayPum, OUTPUT);
   pinMode(LEDwifi, OUTPUT);
   pinMode(LEDmqtt, OUTPUT);
+  pinMode(Reset, INPUT);
   for (auto &sensor : dht)
   {
     sensor.begin();
   }
+    
 }
-
-void setup_wifi()
-{
-  delay(10);
-  // We start by connecting to a WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-    digitalWrite(LEDwifi, LOW);
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  digitalWrite(LEDwifi, HIGH);
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+void setup_wifi(){
+  res = wm.autoConnect("ESP32_MLB","asdasdasd"); 
+  if(!res) {
+        Serial.println("Failed to connect");
+        // ESP.restart();
+    } 
+    else {
+ 
+        Serial.println("connected");
+        Serial.println(WiFi.SSID());
+        digitalWrite(LEDwifi, HIGH);
+    }
+    // res = wm.autoConnect(); // auto generated AP name from chipid
+    // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
 }
+// void setup_wifi()
+// {
+//   delay(10);
+//   // We start by connecting to a WiFi network
+//   Serial.println();
+//   Serial.print("Connecting to ");
+//   Serial.println(ssid);
+
+//   WiFi.begin(ssid, password);
+
+//   while (WiFi.status() != WL_CONNECTED)
+//   {
+//     delay(500);
+//     Serial.print(".");
+//     digitalWrite(LEDwifi, LOW);
+//   }
+
+//   Serial.println("");
+//   Serial.println("WiFi connected");
+//   digitalWrite(LEDwifi, HIGH);
+//   Serial.println("IP address: ");
+//   Serial.println(WiFi.localIP());
+// }
 
 void callback(char *topic, byte *message, unsigned int length)
 {
@@ -187,9 +205,16 @@ void loop()
     reconnect();
   }
   client.loop();
+   if (digitalRead(Reset) == LOW) 
+  {
+    Serial.println("reset wifi and restart...!");
+    wm.resetSettings();
+    ESP.restart();
+    digitalWrite(LEDwifi, HIGH);
+  }
   long now = millis();
   if (now - lastMsg > 60000)
-  {
+  { 
     lastMsg = now;
     for (int index = 0; index < 2; index++)
     {
