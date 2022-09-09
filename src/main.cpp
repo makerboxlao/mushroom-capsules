@@ -13,6 +13,7 @@ int RelayFan = 4; // D20
 int RelayPum = 0; // D3
 int LEDwifi = 2;
 int LEDmqtt = 19;
+int Reset = 14;
 
 float humids[2];
 float temps[2];
@@ -26,7 +27,7 @@ const char *ssid = "MakerboxLao";
 const char *password = "asdasdasd";
 
 // Add your MQTT Broker IP address, example:
-// const char* mqtt_server = "192.168.1.144";
+// const char* mqtt_server = "192.168.43.130";
 const char *mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
