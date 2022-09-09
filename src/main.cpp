@@ -1,9 +1,8 @@
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
 #include "DHT.h"
 #include <Adafruit_Sensor.h>
-#include <WiFiManager.h>
 
 #define DHTTYPE DHT22
 
@@ -24,12 +23,12 @@ float temps[2];
 // as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // Replace the next variables with your SSID/Password combination
-const char *ssid = "MakerboxLao";
-const char *password = "asdasdasd";
+const char *ssid = "HUAWEI Y9 2019";
+const char *password = "llllllll";
 
 // Add your MQTT Broker IP address, example:
-// const char* mqtt_server = "192.168.43.130";
-const char *mqtt_server = "broker.hivemq.com";
+const char* mqtt_server = "192.168.43.146";
+// const char *mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -40,8 +39,6 @@ void callback(char *topic, byte *message, unsigned int length);
 void setup_wifi();
 String data_in;
 String data_out;
-WiFiManager wm;
-bool res;
 void setup()
 {
   Serial.begin(115200);
@@ -59,44 +56,29 @@ void setup()
   }
     
 }
-void setup_wifi(){
-  res = wm.autoConnect("ESP32_MLB","asdasdasd"); 
-  if(!res) {
-        Serial.println("Failed to connect");
-        // ESP.restart();
-    } 
-    else {
- 
-        Serial.println("connected");
-        Serial.println(WiFi.SSID());
-        digitalWrite(LEDwifi, HIGH);
-    }
-    // res = wm.autoConnect(); // auto generated AP name from chipid
-    // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
+void setup_wifi()
+{
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+    digitalWrite(LEDwifi, LOW);
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  digitalWrite(LEDwifi, HIGH);
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 }
-// void setup_wifi()
-// {
-//   delay(10);
-//   // We start by connecting to a WiFi network
-//   Serial.println();
-//   Serial.print("Connecting to ");
-//   Serial.println(ssid);
-
-//   WiFi.begin(ssid, password);
-
-//   while (WiFi.status() != WL_CONNECTED)
-//   {
-//     delay(500);
-//     Serial.print(".");
-//     digitalWrite(LEDwifi, LOW);
-//   }
-
-//   Serial.println("");
-//   Serial.println("WiFi connected");
-//   digitalWrite(LEDwifi, HIGH);
-//   Serial.println("IP address: ");
-//   Serial.println(WiFi.localIP());
-// }
 
 void callback(char *topic, byte *message, unsigned int length)
 {
@@ -205,13 +187,6 @@ void loop()
     reconnect();
   }
   client.loop();
-   if (digitalRead(Reset) == HIGH) 
-  {
-    Serial.println("reset wifi and restart...!");
-    wm.resetSettings();
-    ESP.restart();
-    digitalWrite(LEDwifi, HIGH);
-  }
   long now = millis();
   if (now - lastMsg > 60000)
   { 
