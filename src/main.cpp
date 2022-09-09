@@ -205,7 +205,7 @@ void loop()
     reconnect();
   }
   client.loop();
-   if (digitalRead(Reset) == LOW) 
+   if (digitalRead(Reset) == HIGH) 
   {
     Serial.println("reset wifi and restart...!");
     wm.resetSettings();
