@@ -23,12 +23,12 @@ float temps[2];
 // as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // Replace the next variables with your SSID/Password combination
-const char *ssid = "HUAWEI Y9 2019";
-const char *password = "llllllll";
+const char *ssid = "MakerboxLao";
+const char *password = "asdasdasd";
 
 // Add your MQTT Broker IP address, example:
-const char* mqtt_server = "192.168.43.146";
-// const char *mqtt_server = "broker.hivemq.com";
+// const char* mqtt_server = "192.168.43.146";
+const char *mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
