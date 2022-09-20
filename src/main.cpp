@@ -16,6 +16,7 @@ int RelayPum = 0; // D3
 int LEDwifi = 2;
 int LEDmqtt = 19;
 int Reset = 16;
+String SWauto;
 
 float humids[2];
 float temps[2];
@@ -118,7 +119,8 @@ void callback(char *topic, byte *message, unsigned int length)
   // Changes the output state according to the message
   if (String(topic) == "mlb/esp32/pum")
   {
-    Serial.print("Changing output to ");
+    Serial.print("Changing output to :");
+    Serial.print(messageTemp);
     if (messageTemp == "on")
     {
       digitalWrite(RelayFan, HIGH);
@@ -132,7 +134,8 @@ void callback(char *topic, byte *message, unsigned int length)
   }
   else if (String(topic) == "mlb/esp32/fan")
   {
-    Serial.print("Changing output to ");
+    Serial.print("Changing output to :");
+    Serial.print(messageTemp);
     if (messageTemp == "on")
     {
       digitalWrite(RelayPum, HIGH);
@@ -142,6 +145,19 @@ void callback(char *topic, byte *message, unsigned int length)
     {
       digitalWrite(RelayPum, LOW);
       Serial.println("\noffpum");
+    }
+  }
+  else if (String(topic) == "mlb/esp32/SWauto")
+  {
+    Serial.print("Changing output to :");
+    Serial.print(messageTemp);
+    if (messageTemp == "on")
+    {
+             SWauto = "ON";
+    }
+    else if (messageTemp == "off")
+    {
+            SWauto = "OFF";
     }
   }
 }
@@ -192,16 +208,17 @@ void reconnect()
       Serial.println("connected");
       client.subscribe("mlb/esp32/fan");
       client.subscribe("mlb/esp32/pum");
+      client.subscribe("mlb/esp32/SWauto");
       digitalWrite(LEDmqtt, HIGH);
     }
     else
     {
-      resetwifi();
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       digitalWrite(LEDmqtt, LOW);
+      resetwifi();
       delay(5000);
     }
   }
@@ -227,6 +244,23 @@ void loop()
     String Temin = String(temps[0]).c_str();
     String Humout = String(humids[1]).c_str();
     String Temout = String(temps[1]).c_str();
+  
+    if (SWauto == "ON"){
+      int tempsin = (int) temps[0];
+      int tempsout = (int) temps[1];
+      if (temps[0] == --temps[1])
+      { 
+        Serial.println("Waning....!");
+        Serial.print("Temperture IN : ");
+        Serial.println(tempsin);
+        Serial.print("Temperture OUT : ");
+        Serial.println(tempsout);
+        digitalWrite(RelayPum, HIGH);
+        delay(4000);
+        digitalWrite(RelayPum, LOW);
+      }
+    }
+    
     resetwifi();
     if (isnan(humids[0]))
     {
