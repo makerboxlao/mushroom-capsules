@@ -30,8 +30,8 @@ DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // const char *password = "asdasdasd";
 
 // Add your MQTT Broker IP address, example:
-const char *mqtt_server = "192.168.43.146";
-// const char *mqtt_server = "broker.hivemq.com";
+// const char *mqtt_server = "192.168.43.146";
+const char *mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -48,7 +48,7 @@ void setup()
 {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1884);
+  client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   pinMode(RelayFan, OUTPUT);
   pinMode(RelayPum, OUTPUT);
@@ -62,7 +62,7 @@ void setup()
 }
 void setup_wifi()
 {
-  res = wm.autoConnect("ESP32_MLB", "asdasdasd");
+  res = wm.autoConnect("MUSHROOM01", "asdasdasd");
   if (!res)
   {
     Serial.println("Failed to connect");
@@ -246,22 +246,27 @@ void loop()
     String Temout = String(temps[1]).c_str();
   
     if (SWauto == "ON"){
+      Serial.println("Automatic Runing!");
       int tempsin = (int) temps[0];
       int tempsout = (int) temps[1];
-      if (temps[0] == --temps[1])
-      { 
-        Serial.println("Waning....!");
         Serial.print("Temperture IN : ");
         Serial.println(tempsin);
         Serial.print("Temperture OUT : ");
         Serial.println(tempsout);
+      if (tempsin == --tempsout)
+      // if (1 == 1)
+      { 
+        Serial.println("Waning....!");
+      
         digitalWrite(RelayPum, HIGH);
-        delay(4000);
+        Serial.print("ONpum");
+        delay(3000);
         digitalWrite(RelayPum, LOW);
+         Serial.print("OFFpum");
       }
     }
     
-    resetwifi();
+    // resetwifi();
     if (isnan(humids[0]))
     {
       Serial.println("\nHumindity 1 is not detected");
