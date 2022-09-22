@@ -5,15 +5,13 @@
 #include "DHT.h"
 #include <Adafruit_Sensor.h>
 #include <WiFiManager.h>
+#include "config.h"
 
 #define DHTTYPE DHT22
 
-#define Topic_in "in/dht/mushroom"
-#define Topic_out "out/dht/mushroom"
-
 int RelayFan = 4; // D20
 int RelayPum = 0; // D3
-int LEDwifi = 2;
+int LEDwifi = 2; 
 int LEDmqtt = 19;
 int Reset = 16;
 String SWauto;
@@ -26,13 +24,9 @@ float temps[2];
 // as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // Replace the next variables with your SSID/Password combination
-// const char *ssid = "MakerboxLao";
-// const char *password = "asdasdasd";
-
+// const char *ssid = "******";
+// const char *password = "*******";
 // Add your MQTT Broker IP address, example:
-// const char *mqtt_server = "192.168.43.146";
-const char *mqtt_server = "broker.hivemq.com";
-
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
@@ -48,7 +42,7 @@ void setup()
 {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
   pinMode(RelayFan, OUTPUT);
   pinMode(RelayPum, OUTPUT);
@@ -62,7 +56,7 @@ void setup()
 }
 void setup_wifi()
 {
-  res = wm.autoConnect("MUSHROOM01", "asdasdasd");
+  res = wm.autoConnect(ssid,password);
   if (!res)
   {
     Serial.println("Failed to connect");
@@ -117,37 +111,37 @@ void callback(char *topic, byte *message, unsigned int length)
   // Feel free to add more if statements to control more GPIOs with MQTT
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
   // Changes the output state according to the message
-  if (String(topic) == "mlb/esp32/pum")
+  if (String(topic) == SUB_PUM)
   {
     Serial.print("Changing output to :");
     Serial.print(messageTemp);
     if (messageTemp == "on")
     {
       digitalWrite(RelayFan, HIGH);
-      Serial.println("\nonfan");
+      Serial.println("\nonpum");
     }
     else if (messageTemp == "off")
     {
       digitalWrite(RelayFan, LOW);
-      Serial.println("\nofffan");
+      Serial.println("\noffpum");
     }
   }
-  else if (String(topic) == "mlb/esp32/fan")
+  else if (String(topic) == SUB_FAN)
   {
     Serial.print("Changing output to :");
     Serial.print(messageTemp);
     if (messageTemp == "on")
     {
       digitalWrite(RelayPum, HIGH);
-      Serial.println("\nonpum");
+      Serial.println("\nonfan");
     }
     else if (messageTemp == "off")
     {
       digitalWrite(RelayPum, LOW);
-      Serial.println("\noffpum");
+      Serial.println("\nofffan");
     }
   }
-  else if (String(topic) == "mlb/esp32/SWauto")
+  else if (String(topic) == SUB_AutoSW)
   {
     Serial.print("Changing output to :");
     Serial.print(messageTemp);
@@ -206,9 +200,9 @@ void reconnect()
     {
       // if (client.connect((char*) clientName.c_str()), mqtt_user, mqtt_password)) {
       Serial.println("connected");
-      client.subscribe("mlb/esp32/fan");
-      client.subscribe("mlb/esp32/pum");
-      client.subscribe("mlb/esp32/SWauto");
+      client.subscribe(SUB_FAN);
+      client.subscribe(SUB_PUM);
+      client.subscribe(SUB_AutoSW);
       digitalWrite(LEDmqtt, HIGH);
     }
     else
@@ -253,8 +247,7 @@ void loop()
         Serial.println(tempsin);
         Serial.print("Temperture OUT : ");
         Serial.println(tempsout);
-      if (tempsin == --tempsout)
-      // if (1 == 1)
+      if (tempsin >= --tempsout)
       { 
         Serial.println("Waning....!");
       
@@ -279,7 +272,7 @@ void loop()
       Serial.print("\n");
       Serial.print(data_in);
       data_in.toCharArray(msg, (data_in.length() + 1));
-      client.publish(Topic_in, msg);
+      client.publish(PUB_Topic_in, msg);
     }
     if (isnan(humids[1]))
     {
@@ -293,7 +286,7 @@ void loop()
       Serial.print("\n");
       Serial.print(data_out);
       data_out.toCharArray(msg, (data_out.length() + 1));
-      client.publish(Topic_out, msg);
+      client.publish(PUB_Topic_out, msg);
     }
   }
 }
