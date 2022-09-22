@@ -1,14 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-
-
-// Replace the next variables with your SSID/Password combination
-const char* ssid = "MakerboxLao";
-const char* password = "asdasdasd";
+#include "config.h"
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
-const char* mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -21,7 +16,7 @@ void setup() {
   Serial.begin(115200);
   
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
 
 }
