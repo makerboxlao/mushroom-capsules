@@ -23,12 +23,12 @@ float temps[2];
 // as the current DHT reading algorithm adjusts itself to work on faster procs.
 DHT dht[] = {{5, DHTTYPE}, {16, DHTTYPE}};
 // Replace the next variables with your SSID/Password combination
-const char *ssid = "MakerboxLao";
-const char *password = "asdasdasd";
+const char *ssid = "*****";
+const char *password = "*****";
 
 // Add your MQTT Broker IP address, example:
 // const char* mqtt_server = "192.168.43.146";
-const char *mqtt_server = "broker.hivemq.com";
+const char *mqtt_server = "******";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -43,7 +43,7 @@ void setup()
 {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
   pinMode(RelayFan, OUTPUT);
   pinMode(RelayPum, OUTPUT);
