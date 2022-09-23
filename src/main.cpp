@@ -1,4 +1,3 @@
-// #include <ESP8266WiFi.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino.h>
@@ -71,30 +70,6 @@ void setup_wifi()
   // res = wm.autoConnect(); // auto generated AP name from chipid
   // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
 }
-// void setup_wifi()
-// {
-//   delay(10);
-//   // We start by connecting to a WiFi network
-//   Serial.println();
-//   Serial.print("Connecting to ");
-//   Serial.println(ssid);
-
-//   WiFi.begin(ssid, password);
-
-//   while (WiFi.status() != WL_CONNECTED)
-//   {
-//     delay(500);
-//     Serial.print(".");
-//     digitalWrite(LEDwifi, LOW);
-//   }
-
-//   Serial.println("");
-//   Serial.println("WiFi connected");
-//   digitalWrite(LEDwifi, HIGH);
-//   Serial.println("IP address: ");
-//   Serial.println(WiFi.localIP());
-// }
-
 void callback(char *topic, byte *message, unsigned int length)
 {
   Serial.print("Message arrived on topic: ");
