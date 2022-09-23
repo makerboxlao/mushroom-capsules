@@ -10,7 +10,7 @@
 
 int RelayFan = 4; // D20
 int RelayPum = 0; // D3
-int LEDwifi = 2; 
+int LEDwifi = 2;
 int LEDmqtt = 19;
 int Reset = 16;
 String SWauto;
@@ -33,6 +33,7 @@ char msg[50];
 int value = 0;
 void callback(char *topic, byte *message, unsigned int length);
 void setup_wifi();
+void resetwifi();
 String data_in;
 String data_out;
 WiFiManager wm;
@@ -55,7 +56,7 @@ void setup()
 }
 void setup_wifi()
 {
-  res = wm.autoConnect(ssid,password);
+  res = wm.autoConnect(ssid, password);
   if (!res)
   {
     Serial.println("Failed to connect");
@@ -122,11 +123,11 @@ void callback(char *topic, byte *message, unsigned int length)
     Serial.print(messageTemp);
     if (messageTemp == "on")
     {
-             SWauto = "ON";
+      SWauto = "ON";
     }
     else if (messageTemp == "off")
     {
-            SWauto = "OFF";
+      SWauto = "OFF";
     }
   }
 }
@@ -213,28 +214,27 @@ void loop()
     String Temin = String(temps[0]).c_str();
     String Humout = String(humids[1]).c_str();
     String Temout = String(temps[1]).c_str();
-  
-    if (SWauto == "ON"){
+
+    if (SWauto == "ON")
+    {
       Serial.println("Automatic Runing!");
-      int tempsin = (int) temps[0];
-      int tempsout = (int) temps[1];
-        Serial.print("Temperture IN : ");
-        Serial.println(tempsin);
-        Serial.print("Temperture OUT : ");
-        Serial.println(tempsout);
+      int tempsin = (int)temps[0];
+      int tempsout = (int)temps[1];
+      Serial.print("Temperture IN : ");
+      Serial.println(tempsin);
+      Serial.print("Temperture OUT : ");
+      Serial.println(tempsout);
       if (tempsin >= --tempsout)
-      { 
+      {
         Serial.println("Waning....!");
-      
+
         digitalWrite(RelayPum, HIGH);
         Serial.print("ONpum");
         delay(3000);
         digitalWrite(RelayPum, LOW);
-         Serial.print("OFFpum");
+        Serial.print("OFFpum");
       }
     }
-    
-    // resetwifi();
     if (isnan(humids[0]))
     {
       Serial.println("\nHumindity 1 is not detected");
