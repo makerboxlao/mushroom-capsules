@@ -6,8 +6,8 @@
 
 #define DHTTYPE DHT22
 
-#define Topic_in "in/dht/mushroom"
-#define Topic_out "out/dht/mushroom"
+#define Topic_in "*****"
+#define Topic_out "*****"
 
 int RelayFan = 4; // D20
 int RelayPum = 0; // D3
@@ -97,7 +97,7 @@ void callback(char *topic, byte *message, unsigned int length)
   // Feel free to add more if statements to control more GPIOs with MQTT
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
   // Changes the output state according to the message
-  if (String(topic) == "mlb/esp32/pum")
+  if (String(topic) == "******")
   {
     Serial.print("Changing output to ");
     if (messageTemp == "on")
@@ -111,7 +111,7 @@ void callback(char *topic, byte *message, unsigned int length)
       Serial.println("\nofffan");
     }
   }
-  else if (String(topic) == "mlb/esp32/fan")
+  else if (String(topic) == "*****")
   {
     Serial.print("Changing output to ");
     if (messageTemp == "on")
@@ -164,8 +164,8 @@ void reconnect()
     {
       // if (client.connect((char*) clientName.c_str()), mqtt_user, mqtt_password)) {
       Serial.println("connected");
-      client.subscribe("mlb/esp32/fan");
-      client.subscribe("mlb/esp32/pum");
+      client.subscribe("******");
+      client.subscribe("******");
       digitalWrite(LEDmqtt, HIGH);
     }
     else
