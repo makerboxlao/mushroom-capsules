@@ -93,12 +93,12 @@ void callback(char *topic, byte *message, unsigned int length)
     Serial.print(messageTemp);
     if (messageTemp == "on")
     {
-      digitalWrite(RelayFan, HIGH);
+      digitalWrite(RelayPum, HIGH);
       Serial.println("\nonpum");
     }
     else if (messageTemp == "off")
     {
-      digitalWrite(RelayFan, LOW);
+      digitalWrite(RelayPum, LOW);
       Serial.println("\noffpum");
     }
   }
@@ -108,12 +108,12 @@ void callback(char *topic, byte *message, unsigned int length)
     Serial.print(messageTemp);
     if (messageTemp == "on")
     {
-      digitalWrite(RelayPum, HIGH);
-      Serial.println("\nonfan");
+      digitalWrite(RelayFan, HIGH);
+      Serial.println("\non");
     }
     else if (messageTemp == "off")
     {
-      digitalWrite(RelayPum, LOW);
+      digitalWrite(RelayFan, LOW);
       Serial.println("\nofffan");
     }
   }
@@ -188,35 +188,15 @@ void reconnect()
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       digitalWrite(LEDmqtt, LOW);
-      resetwifi();
+      // resetwifi();
       delay(5000);
     }
   }
 }
 
-void loop()
-{
-  if (!client.connected())
-  {
-    reconnect();
-  }
-  client.loop();
-  long now = millis();
-  if (now - lastMsg > 60000)
-  {
-    lastMsg = now;
-    for (int index = 0; index < 2; index++)
-    {
-      humids[index] = dht[index].readHumidity();
-      temps[index] = dht[index].readTemperature();
-    }
-    String Humin = String(humids[0]).c_str();
-    String Temin = String(temps[0]).c_str();
-    String Humout = String(humids[1]).c_str();
-    String Temout = String(temps[1]).c_str();
-
-    if (SWauto == "ON")
-    {
+void SwAuto(){
+   if (SWauto == "ON")
+    { 
       Serial.println("Automatic Runing!");
       int tempsin = (int)temps[0];
       int tempsout = (int)temps[1];
@@ -233,8 +213,33 @@ void loop()
         delay(3000);
         digitalWrite(RelayPum, LOW);
         Serial.print("OFFpum");
+        
       }
     }
+}
+
+void loop()
+{
+  if (!client.connected())
+  {
+    reconnect();
+  }
+  client.loop();
+  // resetwifi();
+  SwAuto();
+  long now = millis();
+  if (now - lastMsg > 60000)
+  {
+    lastMsg = now;
+    for (int index = 0; index < 2; index++)
+    {
+      humids[index] = dht[index].readHumidity();
+      temps[index] = dht[index].readTemperature();
+    }
+    String Humin = String(humids[0]).c_str();
+    String Temin = String(temps[0]).c_str();
+    String Humout = String(humids[1]).c_str();
+    String Temout = String(temps[1]).c_str();
     if (isnan(humids[0]))
     {
       Serial.println("\nHumindity 1 is not detected");
